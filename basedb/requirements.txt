@@ -1,9 +1,0 @@
-pip install Django==4.2.8
-pip install djangorestframework==3.14.0
-pip install django-cors-headers==4.3.1
-pip install requests==2.31.0
-pip install deep-translator==1.11.4
-pip install python-dateutil==2.8.2
-pip install pytz==2023.3
-pip install mysqlclient==2.2.4
-pip install python-dotenv==1.0.0
