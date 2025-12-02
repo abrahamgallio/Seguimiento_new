@@ -8,39 +8,41 @@ import os
 @receiver(post_migrate)
 def create_default_admin(sender, **kwargs):
     """
-    Crea un usuario admin por defecto después de las migraciones
-    Solo se ejecuta si no existe ningún usuario admin
+    Crea un usuario administrador por defecto después de las migraciones.
+    Se ejecuta solo si no existe ya un usuario admin.
     """
-    # Evita importar antes de que las tablas estén creadas
     from .models import Usuario
-    
-    # Solo crear si no existe ningún admin
-    if Usuario.objects.filter(tipo_usuario='admin', activo=True).exists():
+
+    # Evitar crear admin en apps que no son del proyecto principal
+    if sender.name != "API":  # <--- pon el nombre exacto de tu app
         return
-    
-    print("⚙️  Creando usuario administrador por defecto...")
 
-    # Usar variables de entorno o valores por defecto
-    admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
-    admin_password = os.getenv('ADMIN_PASSWORD', 'Admin1234!')
-    admin_nombre = os.getenv('ADMIN_NOMBRE', 'Admin')
-    admin_apellido = os.getenv('ADMIN_APELLIDO', 'Sistema')
+    # ¿Ya existe un admin?
+    if Usuario.objects.filter(tipo_usuario='admin').exists():
+        print("✔ Ya existe un usuario administrador. No se creará otro.")
+        return
 
-    # Crear el usuario admin
+    print("⚙️ Creando usuario administrador por defecto...")
+
+    # Variables env o valores por defecto
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@system.com")
+    admin_password = os.getenv("ADMIN_PASSWORD", "Admin1234!")
+    admin_nombre = os.getenv("ADMIN_NOMBRE", "Admin")
+    admin_apellido = os.getenv("ADMIN_APELLIDO", "Sistema")
+
     Usuario.objects.create(
         email=admin_email,
-        password_hash=make_password(admin_password),  # ← Usa Argon2 automáticamente
+        password_hash=make_password(admin_password),
         nombre=admin_nombre,
         apellido=admin_apellido,
-        telefono='000000000',
-        fecha_nacimiento='2000-01-01',
-        tipo_usuario='admin',
+        telefono="000000000",
+        fecha_nacimiento="2000-01-01",
+        tipo_usuario="admin",
         fecha_registro=timezone.now(),
         ultima_conexion=timezone.now(),
         activo=True
     )
 
-    print(f"✅ Administrador creado exitosamente")
+    print("✅ Administrador creado:")
     print(f"📧 Email: {admin_email}")
-    print(f"🔑 Contraseña: {admin_password}")
-    print("⚠️  CAMBIA LA CONTRASEÑA INMEDIATAMENTE DESPUÉS DEL PRIMER LOGIN")
+    print(f"🔑 Password: {admin_password}")
