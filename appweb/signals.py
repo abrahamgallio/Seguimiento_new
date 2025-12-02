@@ -11,25 +11,28 @@ def create_default_admin(sender, **kwargs):
     Crea un usuario administrador por defecto después de las migraciones.
     Se ejecuta solo si no existe ya un usuario admin.
     """
-    from .models import Usuario
 
-    # Evitar crear admin en apps que no son del proyecto principal
-    if sender.name != "API":  # <--- pon el nombre exacto de tu app
+    # Asegura que solo se ejecute en la app correcta
+    if sender.name != "appweb":
         return
 
-    # ¿Ya existe un admin?
+    # Importación dentro del signal para evitar errores en migraciones
+    from .models import Usuario
+
+    # Evitar que se cree si ya hay un admin
     if Usuario.objects.filter(tipo_usuario='admin').exists():
         print("✔ Ya existe un usuario administrador. No se creará otro.")
         return
 
     print("⚙️ Creando usuario administrador por defecto...")
 
-    # Variables env o valores por defecto
+    # Variables de entorno o valores por defecto
     admin_email = os.getenv("ADMIN_EMAIL", "admin@system.com")
     admin_password = os.getenv("ADMIN_PASSWORD", "Admin1234!")
     admin_nombre = os.getenv("ADMIN_NOMBRE", "Admin")
     admin_apellido = os.getenv("ADMIN_APELLIDO", "Sistema")
 
+    # Crear el usuario admin
     Usuario.objects.create(
         email=admin_email,
         password_hash=make_password(admin_password),
@@ -43,6 +46,8 @@ def create_default_admin(sender, **kwargs):
         activo=True
     )
 
-    print("✅ Administrador creado:")
+    print("✅ Administrador creado exitosamente")
     print(f"📧 Email: {admin_email}")
     print(f"🔑 Password: {admin_password}")
+
+
