@@ -1,1 +1,1 @@
-web: gunicorn basedb.wsgi
+web: gunicorn seguimiento_new.wsgi
