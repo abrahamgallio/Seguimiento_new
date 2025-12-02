@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 
 # Configurar Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'basedb.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'appweb.settings')
 
 try:
     django.setup()
@@ -93,4 +93,5 @@ def crear_administrador():
         sys.exit(1)
 
 if __name__ == "__main__":
+
     crear_administrador()
