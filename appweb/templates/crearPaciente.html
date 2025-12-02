@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Paciente - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .optional-badge {
+            font-size: 0.75rem;
+            background: #e0e0e0;
+            color: #666;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-weight: normal;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .required::after {
+            content: " *";
+            color: red;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        small {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-group:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        #cuidadorSection {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        #cuidadorSection.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 Registrar Nuevo Paciente</h1>
+            <p>Complete la información del paciente</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <form id="formPaciente">
+            <h2 class="section-title">Información Personal</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">Email</label>
+                    <input type="email" id="email" required placeholder="paciente@ejemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Teléfono</label>
+                    <input type="tel" id="telefono" required placeholder="+56912345678">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">Nombre</label>
+                    <input type="text" id="nombre" required placeholder="María">
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Apellido</label>
+                    <input type="text" id="apellido" required placeholder="González">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Fecha de Nacimiento</label>
+                <input type="date" id="fecha_nacimiento" required>
+            </div>
+
+            <h2 class="section-title">Información Médica</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Número de Identificación</label>
+                    <input type="text" id="numero_identificacion" placeholder="12345678-9">
+                </div>
+
+                <div class="form-group">
+                    <label>Género</label>
+                    <select id="genero">
+                        <option value="">Seleccione</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Grupo Sanguíneo</label>
+                <select id="grupo_sanguineo" required>
+                    <option value="">Seleccione</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Alergias</label>
+                <textarea id="alergias" rows="3" required placeholder="Ninguna conocida"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Enfermedades Crónicas</label>
+                <textarea id="enfermedades_cronicas" rows="3" required placeholder="Ninguna"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="required">Dirección</label>
+                <input type="text" id="direccion" required placeholder="Calle Principal 123, Santiago">
+            </div>
+
+            <h2 class="section-title">Contacto de Emergencia</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre Contacto</label>
+                    <input type="text" id="contacto_emergencia" placeholder="Pedro González">
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono Emergencia</label>
+                    <input type="tel" id="telefono_emergencia" placeholder="+56911111111">
+                </div>
+            </div>
+
+            <h2 class="section-title">
+                Asignar Cuidador 
+                <span class="optional-badge">OPCIONAL</span>
+            </h2>
+
+            <div class="checkbox-group" onclick="toggleCuidador()">
+                <input type="checkbox" id="tieneCuidador" onclick="event.stopPropagation(); toggleCuidador()">
+                <label for="tieneCuidador">👨‍⚕️ Este paciente tiene un cuidador asignado</label>
+            </div>
+
+            <div id="cuidadorSection">
+                <div class="info-box" style="margin-top: 20px;">
+                    <small>
+                        <strong>ℹ️ Nota:</strong> El cuidador recibirá notificaciones sobre el paciente y podrá ayudar con el registro de tomas de medicamentos.
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email del Cuidador</label>
+                        <input type="email" id="cuidador_email" placeholder="cuidador@ejemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono del Cuidador</label>
+                        <input type="tel" id="cuidador_telefono" placeholder="+56922222222">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre del Cuidador</label>
+                        <input type="text" id="cuidador_nombre" placeholder="Juan">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Apellido del Cuidador</label>
+                        <input type="text" id="cuidador_apellido" placeholder="Pérez">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Parentesco</label>
+                    <select id="cuidador_parentesco">
+                        <option value="">Seleccione</option>
+                        <option value="Hijo/a">Hijo/a</option>
+                        <option value="Esposo/a">Esposo/a</option>
+                        <option value="Hermano/a">Hermano/a</option>
+                        <option value="Padre/Madre">Padre/Madre</option>
+                        <option value="Familiar">Otro familiar</option>
+                        <option value="Cuidador profesional">Cuidador profesional</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha de Nacimiento del Cuidador</label>
+                    <input type="date" id="cuidador_fecha_nacimiento">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nivel de Acceso</label>
+                        <select id="cuidador_nivel_acceso">
+                            <option value="completo">Completo</option>
+                            <option value="limitado">Limitado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Disponibilidad</label>
+                        <input type="text" id="cuidador_disponibilidad" placeholder="Lunes a Viernes, 8:00-18:00">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cuidador_notificaciones" checked>
+                    <label for="cuidador_notificaciones">Recibir notificaciones sobre el paciente</label>
+                </div>
+
+                <div class="checkbox-group" style="margin-top: 10px;">
+                    <input type="checkbox" id="cuidador_registrar_tomas" checked>
+                    <label for="cuidador_registrar_tomas">Puede registrar tomas de medicamentos</label>
+                </div>
+
+                <div class="checkbox-group" style="margin-top: 10px;">
+                    <input type="checkbox" id="cuidador_certificado">
+                    <label for="cuidador_certificado">Cuidador certificado profesional</label>
+                </div>
+            </div>
+
+            <div class="form-group" style="background: #f0f4ff; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                <small>
+                    <strong>📌 Nota:</strong> La contraseña inicial del paciente será <strong>123456</strong>. 
+                    El paciente podrá cambiarla después de su primer inicio de sesión.
+                    <span id="notaCuidador" style="display: none;"><br>Si asigna un cuidador, este también recibirá credenciales con la misma contraseña inicial.</span>
+                </small>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                Registrar Paciente
+            </button>
+
+            <a href="/dashboard/medico/" class="btn-back">← Volver al Dashboard</a>
+        </form>
+    </div>
+
+    <script>
+        function toggleCuidador() {
+            const checkbox = document.getElementById('tieneCuidador');
+            const section = document.getElementById('cuidadorSection');
+            const nota = document.getElementById('notaCuidador');
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                section.classList.add('show');
+                nota.style.display = 'inline';
+            } else {
+                section.classList.remove('show');
+                nota.style.display = 'none';
+            }
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            container.innerHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+
+            if (type === 'error') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        document.getElementById('formPaciente').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<span class="loading"></span>Registrando...';
+
+            // Datos del paciente
+            const data = {
+                email: document.getElementById('email').value,
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                telefono: document.getElementById('telefono').value,
+                fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
+                numero_identificacion: document.getElementById('numero_identificacion').value,
+                genero: document.getElementById('genero').value,
+                grupo_sanguineo: document.getElementById('grupo_sanguineo').value,
+                alergias: document.getElementById('alergias').value,
+                enfermedades_cronicas: document.getElementById('enfermedades_cronicas').value,
+                direccion: document.getElementById('direccion').value,
+                contacto_emergencia: document.getElementById('contacto_emergencia').value,
+                telefono_emergencia: document.getElementById('telefono_emergencia').value
+            };
+
+            // Datos del cuidador (si aplica)
+            const tieneCuidador = document.getElementById('tieneCuidador').checked;
+            if (tieneCuidador) {
+                data.cuidador = {
+                    email: document.getElementById('cuidador_email').value,
+                    telefono: document.getElementById('cuidador_telefono').value,
+                    nombre: document.getElementById('cuidador_nombre').value,
+                    apellido: document.getElementById('cuidador_apellido').value,
+                    parentesco: document.getElementById('cuidador_parentesco').value,
+                    fecha_nacimiento: document.getElementById('cuidador_fecha_nacimiento').value,
+                    nivel_acceso: document.getElementById('cuidador_nivel_acceso').value,
+                    disponibilidad: document.getElementById('cuidador_disponibilidad').value,
+                    recibir_notificaciones: document.getElementById('cuidador_notificaciones').checked,
+                    puede_registrar_tomas: document.getElementById('cuidador_registrar_tomas').checked,
+                    certificacion_cuidador: document.getElementById('cuidador_certificado').checked
+                };
+            }
+
+            try {
+                const response = await fetch('/api/paciente/crear/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    let mensaje = `✅ ${result.mensaje}<br><br>` +
+                        `<strong>Credenciales del paciente:</strong><br>` +
+                        `📧 Email: ${data.email}<br>` +
+                        `🔑 Contraseña: 123456<br>`;
+
+                    if (tieneCuidador && data.cuidador.email) {
+                        mensaje += `<br><strong>Credenciales del cuidador:</strong><br>` +
+                            `📧 Email: ${data.cuidador.email}<br>` +
+                            `🔑 Contraseña: 123456<br>`;
+                    }
+
+                    mensaje += `<br><small>Por favor, entregue estas credenciales correspondientes.</small>`;
+
+                    showAlert(mensaje, 'success');
+
+                    // Limpiar formulario
+                    document.getElementById('formPaciente').reset();
+                    document.getElementById('cuidadorSection').classList.remove('show');
+                    document.getElementById('notaCuidador').style.display = 'none';
+
+                    // Redirigir después de 7 segundos
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/medico/';
+                    }, 7000);
+
+                } else {
+                    showAlert(`❌ Error: ${result.error || 'No se pudo registrar el paciente'}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('❌ Error de conexión. Por favor intenta nuevamente.', 'error');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Registrar Paciente';
+            }
+        });
+    </script>
+</body>
+</html>

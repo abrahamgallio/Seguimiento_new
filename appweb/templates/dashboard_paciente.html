@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome {
+            margin-bottom: 2rem;
+        }
+
+        .welcome h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .medication-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .medication-time {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .medication-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .medication-details {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-tomar {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn-tomar:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-tomar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .medication-taken {
+            background: #e8f5e9 !important;
+            border-left-color: #4caf50 !important;
+        }
+
+        .taken-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .data-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .data-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .data-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            background: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .notification-unread {
+            background: #f0f4ff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-check {
+            animation: checkmark 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <span>💊</span>
+            <span>MediTrack</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">P</div>
+            <span id="userName">Paciente</span>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome">
+            <h1 id="welcomeMessage">¡Hola, Paciente!</h1>
+            <p id="currentDate">Mantén tu tratamiento al día</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="tratamientosActivos">0</div>
+                <div class="stat-label">Tratamientos Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="medicamentosActivos">0</div>
+                <div class="stat-label">Medicamentos Activos</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div>
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>💊</span>
+                        Mis Tratamientos Activos
+                    </h2>
+                    <div id="tratamientosContainer">
+                        <p class="loading">Cargando tratamientos...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>👤</span>
+                        Mis Datos
+                    </h2>
+                    <div class="data-grid" id="myDataContainer">
+                        <p class="loading">Cargando información...</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="cambiarPassword()" style="margin-top: 1rem; width: 100%;">
+                        🔒 Cambiar Contraseña
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>🔔</span>
+                        Notificaciones
+                        <span id="notificationCount" style="background: #ff5252; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; margin-left: 0.5rem;">0</span>
+                    </h2>
+                    <div id="notificationsContainer" style="max-height: 500px; overflow-y: auto;">
+                        <p class="loading">Cargando notificaciones...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>⚡</span>
+                        Acciones Rápidas
+                    </h2>
+                    <button class="btn btn-primary" onclick="verMisMedicamentos()" style="width: 100%; margin-bottom: 1rem;">
+                        💊 Ver Mis Medicamentos
+                    </button>
+                    <button class="btn btn-secondary" onclick="verHistorial()" style="width: 100%; margin-bottom: 1rem;">
+                        📊 Ver Mi Historial
+                    </button>
+                    <button class="btn btn-secondary" onclick="contactarMedico()" style="width: 100%;">
+                        👨‍⚕️ Contactar Médico
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let usuarioData = null;
+        let pacienteData = null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const userData = sessionStorage.getItem('meditrack_usuario');
+            if (!userData) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            usuarioData = JSON.parse(userData);
+
+            if (usuarioData.tipo_usuario !== 'paciente') {
+                alert('Acceso no autorizado');
+                window.location.href = '/login/';
+                return;
+            }
+
+            // Actualizar UI básica
+            document.getElementById('userName').textContent = usuarioData.nombre;
+            document.getElementById('userAvatar').textContent = usuarioData.nombre.charAt(0).toUpperCase();
+            document.getElementById('welcomeMessage').textContent = `¡Hola, ${usuarioData.nombre}!`;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('es-ES', options);
+
+            // Cargar datos
+            await cargarDatosPaciente();
+            await cargarTratamientos();
+            await cargarNotificaciones();
+        });
+
+        async function cargarDatosPaciente() {
+            try {
+                // Buscar paciente por usuario
+                const response = await fetch(`${API_BASE}/pacientes-api/?id_usuario=${usuarioData.id_usuario}`);
+                const pacientes = await response.json();
+                
+                if (pacientes.length > 0) {
+                    pacienteData = pacientes[0];
+                    mostrarDatosPaciente();
+                } else {
+                    // Si no hay datos en API, usar sessionStorage
+                    const datosAdicionales = sessionStorage.getItem('meditrack_datos');
+                    if (datosAdicionales) {
+                        pacienteData = JSON.parse(datosAdicionales);
+                        mostrarDatosPaciente();
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar datos del paciente:', error);
+                mostrarDatosPaciente(); // Mostrar con datos de sesión
+            }
+        }
+
+        function mostrarDatosPaciente() {
+            const container = document.getElementById('myDataContainer');
+            container.innerHTML = `
+                <div class="data-row">
+                    <span class="data-label">Nombre Completo:</span>
+                    <span class="data-value">${usuarioData.nombre} ${usuarioData.apellido}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Email:</span>
+                    <span class="data-value">${usuarioData.email}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Teléfono:</span>
+                    <span class="data-value">${usuarioData.telefono || 'No especificado'}</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Fecha de Nacimiento:</span>
+                    <span class="data-value">${new Date(usuarioData.fecha_nacimiento).toLocaleDateString('es-ES')}</span>
+                </div>
+                ${pacienteData && pacienteData.grupo_sanguineo ? `
+                <div class="data-row">
+                    <span class="data-label">Grupo Sanguíneo:</span>
+                    <span class="data-value">${pacienteData.grupo_sanguineo}</span>
+                </div>
+                ` : ''}
+                ${pacienteData && pacienteData.alergias ? `
+                <div class="data-row">
+                    <span class="data-label">Alergias:</span>
+                    <span class="data-value">${pacienteData.alergias}</span>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        async function cargarTratamientos() {
+            try {
+                if (!pacienteData || !pacienteData.id_paciente) {
+                    document.getElementById('tratamientosContainer').innerHTML = 
+                        '<p class="error-message">No se pudo cargar información del paciente</p>';
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE}/tratamientos/por_paciente/?paciente_id=${pacienteData.id_paciente}`);
+                const tratamientos = await response.json();
+
+                const tratamientosActivos = tratamientos.filter(t => t.estado === 'activo');
+                document.getElementById('tratamientosActivos').textContent = tratamientosActivos.length;
+
+                const container = document.getElementById('tratamientosContainer');
+                
+                if (tratamientosActivos.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No tienes tratamientos activos</p>';
+                    document.getElementById('medicamentosActivos').textContent = '0';
+                    return;
+                }
+
+                container.innerHTML = '';
+                let totalMedicamentos = 0;
+
+                for (const tratamiento of tratamientosActivos) {
+                    // Obtener medicamentos del tratamiento
+                    const medResponse = await fetch(`${API_BASE}/tratamiento-medicamentos/por_tratamiento/?tratamiento_id=${tratamiento.id_tratamiento}`);
+                    const medicamentos = await medResponse.json();
+                    totalMedicamentos += medicamentos.length;
+
+                    const div = document.createElement('div');
+                    div.className = 'medication-item';
+                    div.innerHTML = `
+                        <div class="medication-name">📋 ${tratamiento.diagnostico}</div>
+                        <div class="medication-details">
+                            <strong>Tipo:</strong> ${tratamiento.tipo_tratamiento}<br>
+                            <strong>Médico:</strong> ${tratamiento.medico ? tratamiento.medico.nombre_completo : 'No especificado'}<br>
+                            <strong>Inicio:</strong> ${new Date(tratamiento.fecha_inicio).toLocaleDateString('es-ES')}<br>
+                            <strong>Fin:</strong> ${new Date(tratamiento.fecha_fin).toLocaleDateString('es-ES')}<br>
+                            <strong>Medicamentos:</strong> ${medicamentos.length}<br>
+                            ${tratamiento.objetivo_terapeutico ? `<strong>Objetivo:</strong> ${tratamiento.objetivo_terapeutico}` : ''}
+                        </div>
+                        <button class="btn btn-secondary" onclick="verDetallesTratamiento(${tratamiento.id_tratamiento})" style="width: 100%;">
+                            Ver Detalles
+                        </button>
+                    `;
+                    container.appendChild(div);
+                }
+
+                document.getElementById('medicamentosActivos').textContent = totalMedicamentos;
+            } catch (error) {
+                console.error('Error al cargar tratamientos:', error);
+                document.getElementById('tratamientosContainer').innerHTML = 
+                    '<p class="error-message">Error al cargar tratamientos. Por favor, intente más tarde.</p>';
+            }
+        }
+
+        async function cargarNotificaciones() {
+            try {
+                const response = await fetch(`${API_BASE}/notificaciones/no_leidas/?usuario_id=${usuarioData.id_usuario}`);
+                const notificaciones = await response.json();
+
+                const noLeidas = notificaciones.filter(n => n.estado !== 'leida').length;
+                document.getElementById('notificationCount').textContent = noLeidas;
+
+                const container = document.getElementById('notificationsContainer');
+                
+                if (notificaciones.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No hay notificaciones nuevas</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                notificaciones.forEach(notif => {
+                    const div = document.createElement('div');
+                    div.className = 'notification-item' + (notif.estado !== 'leida' ? ' notification-unread' : '');
+                    div.onclick = () => marcarNotificacionLeida(notif.id_notificacion);
+                    
+                    let icon = '🔔';
+                    if (notif.tipo_notificacion === 'recordatorio_medicamento') icon = '⏰';
+                    if (notif.tipo_notificacion === 'mensaje_medico') icon = '💬';
+                    if (notif.tipo_notificacion === 'alerta_medica') icon = '⚠️';
+                    
+                    const fecha = new Date(notif.fecha_creacion);
+                    const ahora = new Date();
+                    const diffHoras = Math.floor((ahora - fecha) / (1000 * 60 * 60));
+                    let tiempoTexto = '';
+                    
+                    if (diffHoras < 1) {
+                        tiempoTexto = 'Hace menos de 1 hora';
+                    } else if (diffHoras < 24) {
+                        tiempoTexto = `Hace ${diffHoras} hora${diffHoras > 1 ? 's' : ''}`;
+                    } else {
+                        const diffDias = Math.floor(diffHoras / 24);
+                        tiempoTexto = `Hace ${diffDias} día${diffDias > 1 ? 's' : ''}`;
+                    }
+                    
+                    div.innerHTML = `
+                        <div class="notification-icon">${icon}</div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notif.titulo}</div>
+                            <div class="notification-text">${notif.mensaje}</div>
+                            <div class="notification-time">${tiempoTexto}</div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error al cargar notificaciones:', error);
+                document.getElementById('notificationsContainer').innerHTML = 
+                    '<p style="text-align: center; color: #666; padding: 2rem;">Error al cargar notificaciones</p>';
+            }
+        }
+
+        async function marcarNotificacionLeida(notifId) {
+            try {
+                await fetch(`${API_BASE}/notificaciones/${notifId}/marcar_leida/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                cargarNotificaciones(); // Recargar
+            } catch (error) {
+                console.error('Error al marcar notificación:', error);
+            }
+        }
+
+        async function verDetallesTratamiento(tratamientoId) {
+            try {
+                const response = await fetch(`${API_BASE}/tratamiento-medicamentos/por_tratamiento/?tratamiento_id=${tratamientoId}`);
+                const medicamentos = await response.json();
+
+                let detalles = '📋 MEDICAMENTOS DEL TRATAMIENTO:\n\n';
+                medicamentos.forEach((tm, index) => {
+                    detalles += `${index + 1}. ${tm.medicamento.nombre_comercial}\n`;
+                    detalles += `   Dosis: ${tm.dosis}\n`;
+                    detalles += `   Frecuencia: ${tm.frecuencia}\n`;
+                    detalles += `   Vía: ${tm.via_administracion}\n`;
+                    if (tm.instrucciones_especiales) {
+                        detalles += `   Instrucciones: ${tm.instrucciones_especiales}\n`;
+                    }
+                    detalles += '\n';
+                });
+
+                alert(detalles);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar detalles del tratamiento');
+            }
+        }
+
+        function verMisMedicamentos() {
+            alert('Próximamente: Vista detallada de todos tus medicamentos con horarios y recordatorios');
+        }
+
+        function verHistorial() {
+            alert('Próximamente: Vista detallada de tu historial de adherencia con gráficas');
+        }
+
+        function contactarMedico() {
+            alert('Próximamente: Sistema de mensajería con tu médico');
+        }
+
+        function cambiarPassword() {
+            const passwordActual = prompt('Ingrese su contraseña actual:');
+            if (!passwordActual) return;
+
+            const passwordNueva = prompt('Ingrese su nueva contraseña:');
+            if (!passwordNueva) return;
+
+            const confirmar = prompt('Confirme su nueva contraseña:');
+            if (passwordNueva !== confirmar) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            fetch(`${API_BASE}/auth/cambiar-password/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuario_id: usuarioData.id_usuario,
+                    password_actual: passwordActual,
+                    password_nueva: passwordNueva
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.error) {
+                    alert('Error: ' + result.error);
+                } else {
+                    alert(result.mensaje || 'Contraseña actualizada correctamente');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cambiar contraseña');
+            });
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                sessionStorage.clear();
+                window.location.href = '/login/';
+            }
+        }
+    </script>
+</body>
+</html>
