@@ -6,8 +6,8 @@ import os
 
 @receiver(post_migrate)
 def create_default_admin(sender, **kwargs):
-    # Ejecutar solo cuando migra la app 'appweb'
-    if sender.name != "appweb":
+    # Ejecutar solo cuando migra la app principal
+    if sender.label != "appweb":
         return
 
     from .models import Usuario
@@ -40,7 +40,6 @@ def create_default_admin(sender, **kwargs):
     print("✅ Administrador creado automáticamente")
     print(f"📧 Email: {admin_email}")
     print(f"🔑 Password: {admin_password}")
-
 
 
 
