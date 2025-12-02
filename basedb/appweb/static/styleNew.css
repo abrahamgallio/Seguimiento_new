@@ -1,0 +1,84 @@
+* {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+input {
+  width: 100%; 
+  padding: 10px; 
+  margin-bottom: 15px; 
+  border: 1px solid #5b5050; 
+  border-radius: 4px; 
+  box-sizing: border-box;
+}
+
+button{
+    background-color: rgb(232, 252, 255);
+    border-style: solid;
+    border-radius: 9px;
+    border-color: rgb(55, 48, 70);
+    font-weight: bolder;
+    width: 190px;
+    height: 50px;
+    
+}
+
+table, th, td {
+    border: 1px solid;
+}
+/* Estilo para elección */
+select {
+    background-color: rgb(236, 245, 248);
+    border-radius: 4px;
+    border-color:#5b5050;
+    margin-bottom: 15px;
+    height: 30px;
+}
+
+/* Estilo para descripciones */
+textarea { 
+    background-color: rgb(233, 247, 238);
+    width: 97%;
+    border-radius: 6px;
+    border-color:#5b5050;
+
+}
+.justify {
+    justify-content: center;
+}
+
+#text-colors-1 {
+    color:rgb(36, 39, 38)
+}
+
+#navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(38, 115, 126);
+}
+
+#text-colors-2 {
+    color:antiquewhite;
+}
+.bordercontent {
+    width:50%;
+    background-color: rgb(255, 255, 255);
+    border-style: solid;
+    border-color:rgb(112, 112, 112);
+    border-radius: 4px;
+}
+
+#background-col1 {
+    background-color: rgb(208, 236, 227);
+}
+
+#footer-properties {
+  
+    color:red;
+
+}
+
+#listsize{
+    size: 40px;
+    color:rgb(83, 106, 119);
+}

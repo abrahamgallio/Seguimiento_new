@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome {
+            margin-bottom: 2rem;
+        }
+
+        .welcome h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue { background: #e3f2fd; }
+        .stat-icon.green { background: #e8f5e9; }
+        .stat-icon.orange { background: #fff3e0; }
+        .stat-icon.purple { background: #f3e5f5; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Quick Actions */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-card .title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-card .desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <span>🏥</span>
+                <span>MediTrack Admin</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userName">Administrador</span>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome -->
+        <div class="welcome">
+            <h1 id="welcomeMessage">Panel de Administración</h1>
+            <p id="currentDate">Gestión del sistema MediTrack</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">👨‍⚕️</div>
+                <div class="stat-value" id="totalMedicos">0</div>
+                <div class="stat-label">Médicos Registrados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">👥</div>
+                <div class="stat-value" id="totalPacientes">0</div>
+                <div class="stat-label">Pacientes Registrados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">💊</div>
+                <div class="stat-value" id="totalTratamientos">0</div>
+                <div class="stat-label">Tratamientos Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">👤</div>
+                <div class="stat-value" id="totalUsuarios">0</div>
+                <div class="stat-label">Total Usuarios</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2 class="card-title">Acciones Rápidas</h2>
+            <div class="actions-grid">
+                <div class="action-card" onclick="window.location.href='/medico/crear/'">
+                    <div class="icon">👨‍⚕️</div>
+                    <div class="title">Registrar Médico</div>
+                    <div class="desc">Agregar nuevo médico al sistema</div>
+                </div>
+                <div class="action-card" onclick="window.location.href='/paciente/crear/'">
+                    <div class="icon">👤</div>
+                    <div class="title">Registrar Paciente</div>
+                    <div class="desc">Agregar nuevo paciente al sistema</div>
+                </div>
+                <div class="action-card" onclick="verMedicos()">
+                    <div class="icon">📋</div>
+                    <div class="title">Gestionar Médicos</div>
+                    <div class="desc">Ver, editar o eliminar médicos</div>
+                </div>
+                <div class="action-card" onclick="verPacientes()">
+                    <div class="icon">📊</div>
+                    <div class="title">Gestionar Pacientes</div>
+                    <div class="desc">Ver, editar o eliminar pacientes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Medicos -->
+        <div class="card">
+            <h2 class="card-title">Médicos Recientes</h2>
+            <div class="table-container">
+                <table id="medicosTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Especialidad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicosTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                Cargando médicos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Pacientes -->
+        <div class="card">
+            <h2 class="card-title">Pacientes Recientes</h2>
+            <div class="table-container">
+                <table id="pacientesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Grupo Sanguíneo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pacientesTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">
+                                Cargando pacientes...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let usuarioData = null;
+
+        // Verificar sesión
+        window.addEventListener('DOMContentLoaded', async () => {
+            const userData = sessionStorage.getItem('meditrack_usuario');
+            if (!userData) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            usuarioData = JSON.parse(userData);
+
+            // Verificar que sea admin
+            if (usuarioData.tipo_usuario !== 'admin') {
+                alert('Acceso no autorizado');
+                window.location.href = '/login/';
+                return;
+            }
+
+            // Actualizar UI
+            document.getElementById('userName').textContent = `${usuarioData.nombre} ${usuarioData.apellido}`;
+            document.getElementById('userAvatar').textContent = usuarioData.nombre.charAt(0);
+            document.getElementById('welcomeMessage').textContent = `Bienvenido, ${usuarioData.nombre}`;
+
+            // Fecha actual
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('currentDate').textContent = 
+                `Panel de administración - ${today.toLocaleDateString('es-ES', options)}`;
+
+            // Cargar datos
+            await cargarEstadisticas();
+            await cargarMedicos();
+            await cargarPacientes();
+        });
+
+        async function cargarEstadisticas() {
+            try {
+                // Total usuarios
+                const resUsuarios = await fetch('/api/usuarios/');
+                if (resUsuarios.ok) {
+                    const usuarios = await resUsuarios.json();
+                    document.getElementById('totalUsuarios').textContent = usuarios.length;
+                }
+
+                // Total médicos
+                const resMedicos = await fetch('/api/medico/listar/');
+                if (resMedicos.ok) {
+                    const medicos = await resMedicos.json();
+                    document.getElementById('totalMedicos').textContent = medicos.length;
+                }
+
+                // Total pacientes
+                const resPacientes = await fetch('/api/paciente/listar/');
+                if (resPacientes.ok) {
+                    const pacientes = await resPacientes.json();
+                    document.getElementById('totalPacientes').textContent = pacientes.length;
+                }
+
+                // Tratamientos activos
+                const resTratamientos = await fetch('/api/tratamientos/activos/');
+                if (resTratamientos.ok) {
+                    const tratamientos = await resTratamientos.json();
+                    document.getElementById('totalTratamientos').textContent = tratamientos.length;
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        async function cargarMedicos() {
+            try {
+                const response = await fetch('/api/medico/listar/');
+                if (!response.ok) throw new Error('Error al cargar médicos');
+
+                const medicos = await response.json();
+                const tbody = document.getElementById('medicosTableBody');
+
+                if (medicos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No hay médicos registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                medicos.slice(0, 5).forEach(medico => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${medico.id_medico}</td>
+                        <td>Dr. ${medico.usuario.nombre} ${medico.usuario.apellido}</td>
+                        <td>${medico.usuario.email}</td>
+                        <td>${medico.especialidad || 'No especificada'}</td>
+                        <td><span class="badge ${medico.usuario.activo ? 'badge-success' : 'badge-warning'}">
+                            ${medico.usuario.activo ? 'Activo' : 'Inactivo'}
+                        </span></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" onclick="editarMedico(${medico.id_medico})">Editar</button>
+                                <button class="btn btn-danger" onclick="eliminarMedico(${medico.id_medico})">Eliminar</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error al cargar médicos:', error);
+                document.getElementById('medicosTableBody').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Error al cargar médicos</td></tr>';
+            }
+        }
+
+        async function cargarPacientes() {
+            try {
+                const response = await fetch('/api/paciente/listar/');
+                if (!response.ok) throw new Error('Error al cargar pacientes');
+
+                const pacientes = await response.json();
+                const tbody = document.getElementById('pacientesTableBody');
+
+                if (pacientes.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No hay pacientes registrados</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                pacientes.slice(0, 5).forEach(paciente => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${paciente.id_paciente}</td>
+                        <td>${paciente.usuario.nombre} ${paciente.usuario.apellido}</td>
+                        <td>${paciente.usuario.email}</td>
+                        <td>${paciente.grupo_sanguineo}</td>
+                        <td><span class="badge ${paciente.usuario.activo ? 'badge-success' : 'badge-warning'}">
+                            ${paciente.usuario.activo ? 'Activo' : 'Inactivo'}
+                        </span></td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" onclick="editarPaciente(${paciente.id_paciente})">Editar</button>
+                                <button class="btn btn-danger" onclick="eliminarPaciente(${paciente.id_paciente})">Eliminar</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error al cargar pacientes:', error);
+                document.getElementById('pacientesTableBody').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Error al cargar pacientes</td></tr>';
+            }
+        }
+
+        function verMedicos() {
+            alert('Próximamente: Vista completa de médicos');
+        }
+
+        function verPacientes() {
+            alert('Próximamente: Vista completa de pacientes');
+        }
+
+        function editarMedico(id) {
+            alert(`Editar médico ID: ${id}`);
+            // window.location.href = `/api/medico/editar/${id}/`;
+        }
+
+        async function eliminarMedico(id) {
+            if (!confirm('¿Está seguro de eliminar este médico?')) return;
+
+            try {
+                const response = await fetch(`/api/medico/eliminar/${id}/`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Médico eliminado correctamente');
+                    await cargarMedicos();
+                    await cargarEstadisticas();
+                } else {
+                    alert('Error al eliminar médico');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        function editarPaciente(id) {
+            alert(`Editar paciente ID: ${id}`);
+            // window.location.href = `/api/paciente/editar/${id}/`;
+        }
+
+        async function eliminarPaciente(id) {
+            if (!confirm('¿Está seguro de eliminar este paciente?')) return;
+
+            try {
+                const response = await fetch(`/api/paciente/eliminar/${id}/`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Paciente eliminado correctamente');
+                    await cargarPacientes();
+                    await cargarEstadisticas();
+                } else {
+                    alert('Error al eliminar paciente');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        function logout() {
+            if (confirm('¿Está seguro de cerrar sesión?')) {
+                sessionStorage.clear();
+                window.location.href = '/login/';
+            }
+        }
+    </script>
+</body>
+</html>

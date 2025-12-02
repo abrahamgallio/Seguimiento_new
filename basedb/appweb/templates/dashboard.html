@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Médico - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome {
+            margin-bottom: 2rem;
+        }
+
+        .welcome h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue { background: #e3f2fd; }
+        .stat-icon.green { background: #e8f5e9; }
+        .stat-icon.orange { background: #fff3e0; }
+        .stat-icon.purple { background: #f3e5f5; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Quick Actions */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .action-btn .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .action-btn .title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .action-btn .desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Calendar */
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-nav button {
+            background: #f0f4ff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .calendar-nav button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #f0f4ff;
+        }
+
+        .calendar-day.today {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-appointments {
+            background: #fff3e0;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-appointments::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #ff9800;
+            border-radius: 50%;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        /* Today's Appointments */
+        .appointments-list {
+            margin-top: 1.5rem;
+        }
+
+        .appointment-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .appointment-time {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.3rem;
+        }
+
+        .appointment-patient {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .appointment-type {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        /* Recent Patients */
+        .patients-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .patient-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .patient-item:hover {
+            background: #f8f9fa;
+        }
+
+        .patient-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.2rem;
+        }
+
+        .patient-detail {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .patient-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .welcome h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">🏥 MediTrack</div>
+            <div id="userWelcome"></div>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">M</div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome">
+            <h1 id="welcomeMessage">Bienvenido, Doctor</h1>
+            <p id="currentDate">Hoy es sábado, 8 de noviembre de 2025</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">👥</div>
+                <div class="stat-value" id="totalPacientes">0</div>
+                <div class="stat-label">Pacientes Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">📅</div>
+                <div class="stat-value" id="citasHoy">0</div>
+                <div class="stat-label">Citas Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">⚠️</div>
+                <div class="stat-value" id="alertas">0</div>
+                <div class="stat-label">Alertas Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">💊</div>
+                <div class="stat-value" id="tratamientosActivos">0</div>
+                <div class="stat-label">Tratamientos Activos</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Acciones Rápidas</h2>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="action-btn" onclick="window.location.href='/api/paciente/crear/'">
+                            <span class="icon">➕</span>
+                            <div class="title">Nuevo Paciente</div>
+                            <div class="desc">Registrar un nuevo paciente</div>
+                        </button>
+                        <button class="action-btn" onclick="verPacientes()">
+                            <span class="icon">👥</span>
+                            <div class="title">Ver Pacientes</div>
+                            <div class="desc">Lista de todos tus pacientes</div>
+                        </button>
+                        <button class="action-btn" onclick="nuevoTratamiento()">
+                            <span class="icon">💊</span>
+                            <div class="title">Nuevo Tratamiento</div>
+                            <div class="desc">Asignar tratamiento médico</div>
+                        </button>
+                        <button class="action-btn" onclick="verReportes()">
+                            <span class="icon">📊</span>
+                            <div class="title">Reportes</div>
+                            <div class="desc">Estadísticas y análisis</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Patients -->
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">Pacientes Recientes</h2>
+                        <button class="btn-logout" onclick="verPacientes()">Ver Todos</button>
+                    </div>
+                    <div class="patients-list" id="patientsList">
+                        <p style="text-align: center; color: #666; padding: 2rem;">Cargando pacientes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Calendar -->
+                <div class="calendar-container">
+                    <div class="card-header">
+                        <h2 class="card-title">Calendario</h2>
+                    </div>
+                    <div class="calendar-header">
+                        <span id="currentMonth" style="font-weight: 600;">Noviembre 2025</span>
+                        <div class="calendar-nav">
+                            <button onclick="previousMonth()">◀</button>
+                            <button onclick="nextMonth()">▶</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+
+                <!-- Today's Appointments -->
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">Citas de Hoy</h2>
+                    </div>
+                    <div class="appointments-list" id="todayAppointments">
+                        <p style="text-align: center; color: #666;">No hay citas programadas para hoy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let usuarioData = null;
+
+        // Verificar sesión y cargar datos
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Verificar sesión
+            const userData = sessionStorage.getItem('meditrack_usuario');
+            if (!userData) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            usuarioData = JSON.parse(userData);
+            
+            // Verificar que sea médico
+            if (usuarioData.tipo_usuario !== 'medico') {
+                alert('Acceso no autorizado');
+                window.location.href = '/login/';
+                return;
+            }
+
+            // Actualizar UI con datos del usuario
+            document.getElementById('welcomeMessage').textContent = `Bienvenido, Dr. ${usuarioData.nombre} ${usuarioData.apellido}`;
+            document.getElementById('userAvatar').textContent = usuarioData.nombre.charAt(0);
+            
+            // Actualizar fecha actual
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('currentDate').textContent = `Hoy es ${today.toLocaleDateString('es-ES', options)}`;
+
+            // Cargar calendario
+            renderCalendar(currentMonth, currentYear);
+
+            // Cargar datos
+            await cargarEstadisticas();
+            await cargarPacientesRecientes();
+            await cargarCitasHoy();
+        });
+
+        function renderCalendar(month, year) {
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            // Headers
+            const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day other-month';
+                grid.appendChild(empty);
+            }
+            
+            // Days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                // Marcar día actual
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayCell.classList.add('today');
+                }
+                
+                // Simular días con citas (ejemplo)
+                if ([5, 8, 12, 15, 18, 22, 25].includes(day)) {
+                    dayCell.classList.add('has-appointments');
+                }
+                
+                dayCell.onclick = () => verCitasDia(day, month, year);
+                grid.appendChild(dayCell);
+            }
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function verCitasDia(day, month, year) {
+            alert(`Ver citas del ${day}/${month + 1}/${year}`);
+            // Aquí implementarías la lógica para mostrar las citas del día
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                const datosAdicionales = JSON.parse(sessionStorage.getItem('meditrack_datos') || '{}');
+                const medicoId = datosAdicionales.id_medico;
+
+                if (!medicoId) {
+                    console.error('No se encontró ID de médico');
+                    return;
+                }
+
+                // Cargar pacientes
+                const resPacientes = await fetch('/api/paciente/listar/');
+                if (resPacientes.ok) {
+                    const pacientes = await resPacientes.json();
+                    document.getElementById('totalPacientes').textContent = pacientes.length;
+                }
+
+                // Cargar tratamientos activos
+                const resTratamientos = await fetch(`/api/tratamientos/por_medico/?medico_id=${medicoId}`);
+                if (resTratamientos.ok) {
+                    const tratamientos = await resTratamientos.json();
+                    const activos = tratamientos.filter(t => t.estado === 'activo');
+                    document.getElementById('tratamientosActivos').textContent = activos.length;
+                }
+
+                // Simular datos (reemplazar con llamadas reales)
+                document.getElementById('citasHoy').textContent = '3';
+                document.getElementById('alertas').textContent = '2';
+
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        async function cargarPacientesRecientes() {
+            try {
+                const response = await fetch('/api/paciente/listar/');
+                if (!response.ok) throw new Error('Error al cargar pacientes');
+
+                const pacientes = await response.json();
+                const container = document.getElementById('patientsList');
+
+                if (pacientes.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No hay pacientes registrados</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                // Mostrar solo los últimos 5 pacientes
+                pacientes.slice(0, 5).forEach(paciente => {
+                    const item = document.createElement('div');
+                    item.className = 'patient-item';
+                    item.innerHTML = `
+                        <div class="patient-avatar">${paciente.usuario.nombre.charAt(0)}</div>
+                        <div class="patient-info">
+                            <div class="patient-name">${paciente.usuario.nombre} ${paciente.usuario.apellido}</div>
+                            <div class="patient-detail">Grupo: ${paciente.grupo_sanguineo} | ${paciente.usuario.telefono}</div>
+                        </div>
+                        <span class="patient-status status-active">Activo</span>
+                    `;
+                    item.onclick = () => verDetallePaciente(paciente.id_paciente);
+                    container.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Error al cargar pacientes:', error);
+                document.getElementById('patientsList').innerHTML = 
+                    '<p style="text-align: center; color: #999; padding: 2rem;">Error al cargar pacientes</p>';
+            }
+        }
+
+        async function cargarCitasHoy() {
+            // Simulación de citas (implementar con datos reales)
+            const citasEjemplo = [
+                { hora: '09:00', paciente: 'María González', tipo: 'Control general' },
+                { hora: '11:30', paciente: 'Juan Pérez', tipo: 'Seguimiento tratamiento' },
+                { hora: '15:00', paciente: 'Ana Martínez', tipo: 'Primera consulta' }
+            ];
+
+            const container = document.getElementById('todayAppointments');
+            
+            if (citasEjemplo.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No hay citas programadas para hoy</p>';
+                return;
+            }
+
+            container.innerHTML = citasEjemplo.map(cita => `
+                <div class="appointment-item">
+                    <div class="appointment-time">🕐 ${cita.hora}</div>
+                    <div class="appointment-patient">${cita.paciente}</div>
+                    <div class="appointment-type">${cita.tipo}</div>
+                </div>
+            `).join('');
+        }
+
+        function verPacientes() {
+            // Redirigir a la lista completa de pacientes
+            alert('Próximamente: Vista completa de pacientes');
+            // window.location.href = '/pacientes/listar/';
+        }
+
+        function verDetallePaciente(pacienteId) {
+            alert(`Ver detalles del paciente ID: ${pacienteId}`);
+            // Implementar vista de detalles
+        }
+
+        function nuevoTratamiento() {
+            alert('Próximamente: Crear nuevo tratamiento');
+            // Implementar creación de tratamiento
+        }
+
+        function verReportes() {
+            alert('Próximamente: Vista de reportes y estadísticas');
+            // Implementar vista de reportes
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                sessionStorage.clear();
+                localStorage.removeItem('meditrack_remember');
+                window.location.href = '/login/';
+            }
+        }
+    </script>
+</body>
+</html>
