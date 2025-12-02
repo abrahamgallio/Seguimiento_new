@@ -18,7 +18,7 @@ def create_default_admin(sender, **kwargs):
 
     print("⚙️  Creando usuario administrador por defecto...")
 
-    admin_email = os.getenv('ADMIN_EMAIL', 'admin@system.com')
+    admin_email = os.getenv('ADMIN_EMAIL', 'admin@meditrack.com')
     admin_password = os.getenv('ADMIN_PASSWORD', 'Admin1234!')
     admin_nombre = os.getenv('ADMIN_NOMBRE', 'Admin')
     admin_apellido = os.getenv('ADMIN_APELLIDO', 'Sistema')
@@ -40,6 +40,7 @@ def create_default_admin(sender, **kwargs):
     print("✅ Administrador creado automáticamente")
     print(f"📧 Email: {admin_email}")
     print(f"🔑 Password: {admin_password}")
+
 
 
 
