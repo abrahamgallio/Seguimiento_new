@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../static/styleNew.css">
+</head>
+<body>
+    <ul id="navbar">
+        <li><a href="{% url 'crearPaciente' %}" id="text-colors-2"> Crear Paciente</a></li>
+    </ul>
+    <main>
+        {% block content %} {% endblock %}
+    </main>
+    <footer id="footer-properties">
+        all rights reserved to Gallium enterprises (c).
+    </footer>
+</body>
+</html>

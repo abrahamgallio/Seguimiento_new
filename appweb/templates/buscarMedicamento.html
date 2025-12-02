@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Medicamento - MediTrack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .interaction-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Información de Medicamentos</h1>
+            <p>Powered by OpenFDA Database</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('buscar')">🔍 Buscar Medicamento</button>
+            <button class="tab" onclick="switchTab('interacciones')">⚠️ Verificar Interacciones</button>
+            <button class="tab" onclick="switchTab('efectos')">📋 Efectos Adversos</button>
+        </div>
+
+        <!-- Tab 1: Buscar Medicamento -->
+        <div id="tab-buscar" class="tab-content active">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Ej: Omeprazol, Aspirin, Metformin..."
+                    onkeypress="if(event.key === 'Enter') buscarMedicamento()"
+                >
+                <button class="btn" onclick="buscarMedicamento()" id="btnBuscar">
+                    🔍 Buscar
+                </button>
+            </div>
+            <div style="margin-bottom: 1rem; text-align: center;">
+                <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="traducirCheck" style="width: 18px; height: 18px;">
+                    <span>🌐 Traducir al español</span>
+                </label>
+            </div>
+
+            <div id="alertContainer"></div>
+            <div id="resultsContainer" class="results"></div>
+        </div>
+
+        <!-- Tab 2: Verificar Interacciones -->
+        <div id="tab-interacciones" class="tab-content">
+            <div class="interaction-form">
+                <input 
+                    type="text" 
+                    id="med1Input" 
+                    placeholder="Primer medicamento"
+                >
+                <input 
+                    type="text" 
+                    id="med2Input" 
+                    placeholder="Segundo medicamento"
+                >
+            </div>
+            <div style="margin-bottom: 1rem; text-align: center;">
+                <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="traducirCheckInteracciones" style="width: 18px; height: 18px;">
+                    <span>🌐 Traducir al español</span>
+                </label>
+            </div>
+            <button class="btn" onclick="verificarInteracciones()" id="btnInteracciones" style="width: 100%;">
+                ⚠️ Verificar Interacciones
+            </button>
+            <div id="alertContainerInteracciones"></div>
+            <div id="resultsInteracciones" class="results"></div>
+        </div>
+
+        <!-- Tab 3: Efectos Adversos -->
+        <div id="tab-efectos" class="tab-content">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="efectosInput" 
+                    placeholder="Nombre del medicamento"
+                    onkeypress="if(event.key === 'Enter') buscarEfectos()"
+                >
+                <button class="btn" onclick="buscarEfectos()" id="btnEfectos">
+                    📋 Ver Efectos
+                </button>
+            </div>
+            <div style="margin-bottom: 1rem; text-align: center;">
+                <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="traducirCheckEfectos" style="width: 18px; height: 18px;">
+                    <span>🌐 Traducir al español</span>
+                </label>
+            </div>
+            <div id="alertContainerEfectos"></div>
+            <div id="resultsEfectos" class="results"></div>
+        </div>
+
+        <a href="/dashboard/medico/" class="btn-back">← Volver al Dashboard</a>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar tab seleccionado
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showAlert(message, type, containerId = 'alertContainer') {
+            const container = document.getElementById(containerId);
+            const alertClass = type === 'info' ? 'alert-info' : 
+                               type === 'error' ? 'alert-error' : 'alert-warning';
+            
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        async function buscarMedicamento() {
+            const searchInput = document.getElementById('searchInput');
+            const medicamento = searchInput.value.trim();
+            const traducir = document.getElementById('traducirCheck').checked;
+            
+            if (!medicamento) {
+                showAlert('⚠️ Por favor ingrese el nombre de un medicamento', 'error');
+                return;
+            }
+
+            const btnBuscar = document.getElementById('btnBuscar');
+            btnBuscar.disabled = true;
+            btnBuscar.innerHTML = '<span class="loading"></span>' + (traducir ? 'Buscando y traduciendo...' : 'Buscando...');
+
+            try {
+                const url = `/api/medicamento/buscar-fda/?nombre=${encodeURIComponent(medicamento)}&traducir=${traducir}`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (response.ok) {
+                    mostrarResultados(result.datos);
+                } else {
+                    showAlert(`❌ ${result.error || result.mensaje || 'No se encontró el medicamento'}`, 'error');
+                    document.getElementById('resultsContainer').classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('❌ Error de conexión. Por favor intenta nuevamente.', 'error');
+            } finally {
+                btnBuscar.disabled = false;
+                btnBuscar.innerHTML = '🔍 Buscar';
+            }
+        }
+
+        function mostrarResultados(datos) {
+            const container = document.getElementById('resultsContainer');
+            
+            container.innerHTML = `
+                <div class="info-card">
+                    <h3>📦 Información General</h3>
+                    <p><strong>Nombre Comercial:</strong> ${datos.nombre_comercial}</p>
+                    <p><strong>Nombre Genérico:</strong> ${datos.nombre_generico}</p>
+                    <p><strong>Fabricante:</strong> ${datos.fabricante}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>💡 Indicaciones</h3>
+                    <p>${datos.indicaciones}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>⚠️ Efectos Adversos</h3>
+                    <p>${datos.efectos_adversos}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>🚫 Contraindicaciones</h3>
+                    <p>${datos.contraindicaciones}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>💊 Dosificación</h3>
+                    <p>${datos.dosis}</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>⚡ Interacciones</h3>
+                    <p>${datos.interacciones}</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Advertencia:</strong> Esta información es proporcionada por la FDA y es solo para fines informativos. Siempre consulte con su médico antes de tomar cualquier medicamento.
+                </div>
+            `;
+            
+            container.classList.add('show');
+        }
+
+        async function verificarInteracciones() {
+            const med1 = document.getElementById('med1Input').value.trim();
+            const med2 = document.getElementById('med2Input').value.trim();
+            const traducir = document.getElementById('traducirCheckInteracciones').checked;
+
+            if (!med1 || !med2) {
+                showAlert('⚠️ Por favor ingrese ambos medicamentos', 'error', 'alertContainerInteracciones');
+                return;
+            }
+
+            const btnInteracciones = document.getElementById('btnInteracciones');
+            btnInteracciones.disabled = true;
+            btnInteracciones.innerHTML = '<span class="loading"></span>' + (traducir ? 'Verificando y traduciendo...' : 'Verificando...');
+
+            try {
+                const url = `/api/medicamento/verificar-interacciones/?med1=${encodeURIComponent(med1)}&med2=${encodeURIComponent(med2)}&traducir=${traducir}`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                const container = document.getElementById('resultsInteracciones');
+
+                if (response.ok) {
+                    if (result.interaccion_especifica) {
+                        // Hay interacción específica
+                        container.innerHTML = `
+                            <div class="alert alert-warning">
+                                <strong>${result.mensaje}</strong><br>
+                                ${result.advertencia}
+                            </div>
+                            ${result.datos.map(item => `
+                                <div class="info-card">
+                                    <h3>⚠️ ${item.encontrado_en} menciona interacción con ${item.menciona_a}</h3>
+                                    <p>${item.descripcion}</p>
+                                </div>
+                            `).join('')}
+                        `;
+                    } else {
+                        // NO hay interacción específica documentada
+                        container.innerHTML = `
+                            <div class="alert alert-info">
+                                <strong>${result.mensaje}</strong><br><br>
+                                ${result.informacion_adicional}<br><br>
+                                <em>${result.advertencia}</em>
+                            </div>
+                            <div class="info-card">
+                                <h3>📋 ${result.nota}</h3>
+                            </div>
+                        `;
+                    }
+                    container.classList.add('show');
+                } else {
+                    showAlert(`❌ ${result.error || result.mensaje}`, 'error', 'alertContainerInteracciones');
+                    container.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('❌ Error de conexión', 'error', 'alertContainerInteracciones');
+            } finally {
+                btnInteracciones.disabled = false;
+                btnInteracciones.innerHTML = '⚠️ Verificar Interacciones';
+            }
+        }
+
+        async function buscarEfectos() {
+            const medicamento = document.getElementById('efectosInput').value.trim();
+            const traducir = document.getElementById('traducirCheckEfectos').checked;
+
+            if (!medicamento) {
+                showAlert('⚠️ Por favor ingrese el nombre de un medicamento', 'error', 'alertContainerEfectos');
+                return;
+            }
+
+            const btnEfectos = document.getElementById('btnEfectos');
+            btnEfectos.disabled = true;
+            btnEfectos.innerHTML = '<span class="loading"></span>' + (traducir ? 'Buscando y traduciendo...' : 'Buscando...');
+
+            try {
+                const url = `/api/medicamento/efectos-adversos/?nombre=${encodeURIComponent(medicamento)}&traducir=${traducir}`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                const container = document.getElementById('resultsEfectos');
+
+                if (response.ok) {
+                    const datos = result.datos;
+                    container.innerHTML = `
+                        <div class="info-card">
+                            <h3>⚠️ Efectos Adversos de ${datos.medicamento}</h3>
+                            <p>${datos.efectos_adversos}</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>📢 Advertencias</h3>
+                            <p>${datos.advertencias}</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>🛡️ Precauciones</h3>
+                            <p>${datos.precauciones}</p>
+                        </div>
+                    `;
+                    container.classList.add('show');
+                } else {
+                    showAlert(`❌ ${result.error}`, 'error', 'alertContainerEfectos');
+                    container.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('❌ Error de conexión', 'error', 'alertContainerEfectos');
+            } finally {
+                btnEfectos.disabled = false;
+                btnEfectos.innerHTML = '📋 Ver Efectos';
+            }
+        }
+    </script>
+</body>
+</html>
